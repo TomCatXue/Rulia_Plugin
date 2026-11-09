@@ -1,0 +1,20 @@
+{
+  "name": "@rulia/JinmanTiantang",
+  "title": "禁漫天堂",
+  "description": "禁漫天堂（18comic）漫画源插件，移植自 keiyoushi 的 JinmanTiantang 扩展。",
+  "version": "0.1.1",
+  "author": "TomCatXue",
+  "tags": [
+    "禁漫天堂",
+    "JinmanTiantang",
+    "18comic",
+    "Manga"
+  ],
+  "homepage": "https://18comic.vip",
+  "userConfig": {
+    "mirror": {
+      "displayName": "镜像域名",
+      "description": "默认 https://18comic.vip；可换 https://18comic.ink 等。仅用于封面 CDN 与跳转。"
+    }
+  }
+}

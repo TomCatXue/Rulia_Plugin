@@ -1,0 +1,14 @@
+{
+  "name": "@rulia/TencentComics",
+  "title": "腾讯动漫",
+  "description": "腾讯动漫（ac.qq.com）漫画源插件。",
+  "version": "0.1.4",
+  "author": "TomCatXue",
+  "tags": [
+    "Tencent",
+    "Comics",
+    "腾讯动漫",
+    "ac.qq.com"
+  ],
+  "homepage": "https://ac.qq.com"
+}

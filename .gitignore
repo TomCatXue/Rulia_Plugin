@@ -1,0 +1,12 @@
+# 本地笔记与临时产物
+notes/
+work/
+*.log
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# 本地 Agent 规范与私有备忘（不上传公共仓库）
+AGENTS.md
+Agents.md

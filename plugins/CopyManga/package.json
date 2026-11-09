@@ -1,0 +1,20 @@
+{
+  "name": "@rulia/CopyManga",
+  "title": "拷贝漫画",
+  "description": "拷贝漫画（mangacopy.com）源插件，移植自 Tachiyomi CopyManga 扩展。",
+  "version": "0.2.0",
+  "author": "TomCatXue",
+  "tags": [
+    "Copy",
+    "Manga",
+    "CopyManga",
+    "拷贝漫画"
+  ],
+  "homepage": "https://www.mangacopy.com",
+  "userConfig": {
+    "authorization": {
+      "displayName": "authorization",
+      "description": "可选。用于「书架」收藏；留空则仅浏览/搜索。用浏览器开发者工具从请求头复制，例如：Token a5822c5xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx54f"
+    }
+  }
+}

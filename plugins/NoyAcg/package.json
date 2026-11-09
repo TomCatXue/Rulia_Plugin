@@ -1,0 +1,31 @@
+{
+  "name": "@rulia/NoyAcg",
+  "title": "NoyAcg",
+  "description": "NoyAcg (noymanga.com) 漫画源插件。",
+  "version": "0.1.3",
+  "author": "TomCatXue",
+  "tags": [
+    "NoyAcg",
+    "Manga",
+    "noymanga"
+  ],
+  "homepage": "https://noymanga.com",
+  "userConfig": {
+    "username": {
+      "displayName": "用户名",
+      "description": "NoyAcg 账号用户名或邮箱（必填，否则列表为空）。"
+    },
+    "password": {
+      "displayName": "密码",
+      "description": "NoyAcg 账号密码。"
+    },
+    "apiHost": {
+      "displayName": "API 域名",
+      "description": "默认 api.noyteam.online；也可填 api.noymanga.com 或 api.noy.asia。"
+    },
+    "allowAdult": {
+      "displayName": "成人内容",
+      "description": "both=全部；none=隐藏；only=仅成人。"
+    }
+  }
+}
