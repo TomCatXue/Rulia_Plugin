@@ -22,7 +22,7 @@
 | <img src="plugins/CopyManga/icon.png" height="20" /> | **拷贝漫画** | mangacopy.com | 浏览 / 搜索 / 收藏（可选填 authorization） | <nobr><a href="./dist/CopyManga.v0.2.0.zip"><strong>下载</strong></a></nobr> |
 | <img src="plugins/JinmanTiantang/icon.png" height="20" /> | **禁漫天堂** | 18comic | 浏览 / 搜索 / 分类；章节图为 WebP（需装 WebP 解码扩展） | <nobr><a href="./dist/JinmanTiantang.v0.1.1.zip"><strong>下载</strong></a></nobr> |
 | <img src="plugins/NoyAcg/icon.png" height="20" /> | **NoyAcg** | noymanga.com | 需账号密码登录；图片域名强制 `User-Agent: NoyAcg/3.0` | <nobr><a href="./dist/NoyAcg.v0.1.3.zip"><strong>下载</strong></a></nobr> |
-| <img src="plugins/TencentComics/icon.png" height="20" /> | **腾讯动漫** | ac.qq.com | 浏览 / 搜索 / 详情 / 章节（含付费章节解密） | <nobr><a href="./dist/TencentComics.v0.1.4.zip"><strong>下载</strong></a></nobr> |
+| <img src="plugins/TencentComics/icon.png" height="20" /> | **腾讯动漫** | ac.qq.com | 浏览 / 搜索 / 详情 / 章节（含付费章节解密） | <nobr><a href="./dist/TencentComics.v0.1.5.zip"><strong>下载</strong></a></nobr> |
 
 ## 安装方法
 
