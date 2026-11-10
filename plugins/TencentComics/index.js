@@ -80,10 +80,15 @@ function parseSearchList (html) {
 
 async function getMangaList (page, pageSize, keyword, rawFilterOptions) {
   const pageNum = parseInt(page) || 1
+  const size = parseInt(pageSize) || 12
   try {
+    try { window.Rulia.log('info', '[Tencent] getMangaList page=' + page + ' pageSize=' + pageSize) } catch (e) {}
     if (keyword) {
-      const html = await getHtml(MOBILE + '/search/result?word=' + encodeURIComponent(keyword) + '&page=' + pageNum, MOBILE_UA)
-      window.Rulia.endWithResult({ list: parseSearchList(html) })
+      const items = await fetchSourcePages(size, pageNum, 10, async function (srcPage) {
+        const html = await getHtml(MOBILE + '/search/result?word=' + encodeURIComponent(keyword) + '&page=' + srcPage, MOBILE_UA)
+        return parseSearchList(html)
+      })
+      window.Rulia.endWithResult({ list: items })
       return
     }
     let filter = {}
@@ -92,12 +97,30 @@ async function getMangaList (page, pageSize, keyword, rawFilterOptions) {
     const status = filter.status ? 'finish/' + filter.status + '/' : ''
     const popularity = filter.sort === 'time' ? 'time/' : 'hot/'
     const vip = filter.vip ? 'vip/' + filter.vip + '/' : ''
-    const url = DESKTOP + '/Comic/all/' + genre + status + 'search/' + popularity + vip + 'page/' + pageNum
-    const html = await getHtml(url)
-    window.Rulia.endWithResult({ list: parsePopularList(html) })
+    const items = await fetchSourcePages(size, pageNum, 12, async function (srcPage) {
+      const html = await getHtml(DESKTOP + '/Comic/all/' + genre + status + 'search/' + popularity + vip + 'page/' + srcPage)
+      return parsePopularList(html)
+    })
+    window.Rulia.endWithResult({ list: items })
   } catch (error) {
     window.Rulia.endWithException(error && error.message ? error.message : String(error))
   }
+}
+
+async function fetchSourcePages (size, pageNum, srcSize, fetchPage) {
+  const startIdx = (pageNum - 1) * size
+  const offset = startIdx % srcSize
+  const items = []
+  let srcPage = Math.floor(startIdx / srcSize) + 1
+  let guard = 0
+  while (items.length < offset + size && guard < 40) {
+    const pageItems = await fetchPage(srcPage)
+    if (!pageItems || !pageItems.length) break
+    for (let i = 0; i < pageItems.length; i++) items.push(pageItems[i])
+    srcPage++
+    guard++
+  }
+  return items.slice(offset, offset + size)
 }
 
 async function setMangaListFilterOptions () {
@@ -157,7 +180,12 @@ async function getChapterImageList (chapterUrl) {
 function decodeChapterData (html) {
   const afterWindow = html.substring(html.lastIndexOf('window['))
   const nonceExpr = afterWindow.substring(afterWindow.indexOf('] = ') + 4).split('<\/script>')[0].trim()
-  const nonceValue = evalNonceExpr(nonceExpr.replace(/;\s*$/, ''))
+  let nonceValue
+  try {
+    nonceValue = eval(nonceExpr.replace(/;\s*$/, ''))
+  } catch (e) {
+    nonceValue = evalNonceExpr(nonceExpr.replace(/;\s*$/, ''))
+  }
   if (nonceValue == null) throw new Error('无法解析章节 nonce')
   let raw = html.substring(html.lastIndexOf('var DATA =') + 'var DATA ='.length)
   raw = raw.split('PRELOAD_NUM')[0].trim().replace(/^'/, '').replace(/',$/, '')
@@ -292,6 +320,24 @@ function computeNumber (src) {
       if (nm[0] === 'abs') return Math.abs(arg)
       if (nm[0] === 'sqrt') return Math.sqrt(arg)
       return NaN
+    }
+    if (s.substr(p, 8) === 'parseInt') {
+      p += 8
+      ws()
+      if (s.charAt(p) === '(') p++
+      const arg = parseExpression()
+      ws()
+      if (s.charAt(p) === ')') p++
+      return arg < 0 ? Math.ceil(arg) : Math.floor(arg)
+    }
+    if (s.substr(p, 10) === 'parseFloat') {
+      p += 10
+      ws()
+      if (s.charAt(p) === '(') p++
+      const arg = parseExpression()
+      ws()
+      if (s.charAt(p) === ')') p++
+      return parseFloat(arg)
     }
     const num = s.slice(p).match(/^\d+(\.\d+)?/)
     if (num) { p += num[0].length; return parseFloat(num[0]) }

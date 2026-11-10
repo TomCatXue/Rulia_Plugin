@@ -120,42 +120,63 @@ function formatDescription (info) {
 
 async function getMangaList (page, pageSize, keyword, rawFilterOptions) {
   const pageNum = parseInt(page) || 1
+  const size = parseInt(pageSize) || 20
   try {
     if (keyword) {
-      return await search(pageNum, keyword)
+      return await search(size, pageNum, keyword)
     }
-    return await browse(pageNum, rawFilterOptions)
+    return await browse(size, pageNum, rawFilterOptions)
   } catch (error) {
     window.Rulia.endWithException(error && error.message ? error.message : String(error))
   }
 }
 
-async function search (page, keyword) {
-  const payload = 'value=' + encodeURIComponent(keyword) + '&page=' + page + '&type=book'
-  const raw = await request(API_BASE + '/api/v4/search/fetch', { method: 'POST', payload })
-  const json = JSON.parse(raw)
-  const list = json.data || json.info || []
-  window.Rulia.endWithResult({ list: (list || []).map(toListManga) })
+async function search (size, pageNum, keyword) {
+  const items = await fetchSourcePages(size, pageNum, 20, async function (srcPage) {
+    const payload = 'value=' + encodeURIComponent(keyword) + '&page=' + srcPage + '&type=book'
+    const raw = await request(API_BASE + '/api/v4/search/fetch', { method: 'POST', payload })
+    const json = JSON.parse(raw)
+    return (json.data || json.info || []).map(toListManga)
+  })
+  window.Rulia.endWithResult({ list: items })
 }
 
-async function browse (page, rawFilterOptions) {
+async function browse (size, pageNum, rawFilterOptions) {
   let filter = {}
   try { filter = rawFilterOptions ? JSON.parse(rawFilterOptions) : {} } catch (e) { filter = {} }
 
   let path
-  let payload
+  let makePayload
   if (filter.sort === 'new') {
     path = '/api/b1/booklist'
-    payload = 'page=' + page + '&sort=new'
+    makePayload = function (srcPage) { return 'page=' + srcPage + '&sort=new' }
   } else {
     path = '/api/readLeaderboard'
-    payload = 'type=' + encodeURIComponent(filter.sort || 'day') + '&page=' + page
+    makePayload = function (srcPage) { return 'type=' + encodeURIComponent(filter.sort || 'day') + '&page=' + srcPage }
   }
 
-  const raw = await request(API_BASE + path, { method: 'POST', payload })
-  const json = JSON.parse(raw)
-  const list = json.data || json.info || []
-  window.Rulia.endWithResult({ list: (list || []).map(toListManga) })
+  const items = await fetchSourcePages(size, pageNum, 20, async function (srcPage) {
+    const raw = await request(API_BASE + path, { method: 'POST', payload: makePayload(srcPage) })
+    const json = JSON.parse(raw)
+    return (json.data || json.info || []).map(toListManga)
+  })
+  window.Rulia.endWithResult({ list: items })
+}
+
+async function fetchSourcePages (size, pageNum, srcSize, fetchPage) {
+  const startIdx = (pageNum - 1) * size
+  const offset = startIdx % srcSize
+  const items = []
+  let srcPage = Math.floor(startIdx / srcSize) + 1
+  let guard = 0
+  while (items.length < offset + size && guard < 40) {
+    const pageItems = await fetchPage(srcPage)
+    if (!pageItems || !pageItems.length) break
+    for (let i = 0; i < pageItems.length; i++) items.push(pageItems[i])
+    srcPage++
+    guard++
+  }
+  return items.slice(offset, offset + size)
 }
 
 async function setMangaListFilterOptions () {
