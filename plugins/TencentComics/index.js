@@ -88,6 +88,7 @@ async function getMangaList (page, pageSize, keyword, rawFilterOptions) {
         const html = await getHtml(MOBILE + '/search/result?word=' + encodeURIComponent(keyword) + '&page=' + srcPage, MOBILE_UA)
         return parseSearchList(html)
       })
+      try { window.Rulia.log('info', '[Tencent] search returned ' + items.length + ' items (size=' + size + ')') } catch (e) {}
       window.Rulia.endWithResult({ list: items })
       return
     }
@@ -101,6 +102,7 @@ async function getMangaList (page, pageSize, keyword, rawFilterOptions) {
       const html = await getHtml(DESKTOP + '/Comic/all/' + genre + status + 'search/' + popularity + vip + 'page/' + srcPage)
       return parsePopularList(html)
     })
+    try { window.Rulia.log('info', '[Tencent] browse returned ' + items.length + ' items (size=' + size + ')') } catch (e) {}
     window.Rulia.endWithResult({ list: items })
   } catch (error) {
     window.Rulia.endWithException(error && error.message ? error.message : String(error))
